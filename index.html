@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>DinoRace 🦕</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;
+  --surface:#13131a;
+  --surface2:#1e1e2e;
+  --border:#2a2a3e;
+  --accent:#7c3aed;
+  --accent2:#06b6d4;
+  --gold:#f59e0b;
+  --green:#10b981;
+  --red:#ef4444;
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --radius:14px;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:opacity .3s,transform .3s;overflow-y:auto}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(20px)}
+
+/* ── LOADING ── */
+#s-loading{background:var(--bg);z-index:100}
+.dino-bounce{font-size:4em;animation:bounce 0.6s ease-in-out infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-20px)}}
+.loading-bar-wrap{width:220px;height:6px;background:var(--border);border-radius:3px;margin-top:24px;overflow:hidden}
+.loading-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width .3s}
+.loading-text{margin-top:12px;font-size:.85em;color:var(--muted);letter-spacing:.05em}
+
+/* ── HOME ── */
+#s-home{gap:0}
+.home-header{text-align:center;margin-bottom:32px}
+.logo{font-size:2.8em;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px}
+.tagline{color:var(--muted);font-size:.9em;margin-top:4px}
+.home-player{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:24px;width:100%;max-width:360px;cursor:pointer}
+.home-player .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.4em;flex-shrink:0}
+.home-player .info{flex:1;min-width:0}
+.home-player .name{font-weight:700;font-size:.95em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-player .lvl{font-size:.75em;color:var(--muted);margin-top:2px}
+.home-player .edit{color:var(--muted);font-size:.8em}
+.xp-bar-wrap{width:100%;max-width:360px;margin-bottom:28px}
+.xp-label{display:flex;justify-content:space-between;font-size:.72em;color:var(--muted);margin-bottom:6px}
+.xp-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .6s ease}
+
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:360px}
+.btn-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;text-align:center}
+.btn-card:active{transform:scale(.97);background:var(--surface2)}
+.btn-card .icon{font-size:2em}
+.btn-card .label{font-size:.82em;font-weight:700;letter-spacing:.03em}
+.btn-card .sub{font-size:.7em;color:var(--muted);margin-top:2px}
+.btn-card.primary{border-color:var(--accent);background:rgba(124,58,237,.12)}
+.btn-card.secondary{border-color:var(--accent2);background:rgba(6,182,212,.08)}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:50}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;cursor:pointer;opacity:.5;transition:opacity .2s;font-size:.65em;font-weight:600;letter-spacing:.03em}
+.nav-tab .nav-icon{font-size:1.5em}
+.nav-tab.active{opacity:1;color:var(--accent)}
+
+/* ── LEADERBOARD ── */
+#s-leaderboard{justify-content:flex-start;padding-top:0;gap:0}
+.page-header{width:100%;max-width:500px;padding:16px 20px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.page-header h2{font-size:1.1em;font-weight:800}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1em}
+.tabs{display:flex;gap:0;width:100%;max-width:500px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:12px 6px;text-align:center;font-size:.78em;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.lb-list{width:100%;max-width:500px;overflow-y:auto;flex:1;padding:8px 0 90px}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .15s}
+.lb-row:active{background:var(--surface)}
+.lb-rank{width:28px;font-size:.85em;font-weight:800;text-align:center;flex-shrink:0}
+.lb-rank.gold{color:var(--gold)}
+.lb-rank.silver{color:#94a3b8}
+.lb-rank.bronze{color:#b45309}
+.lb-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.2em;flex-shrink:0}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-weight:700;font-size:.9em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-detail{font-size:.72em;color:var(--muted);margin-top:2px}
+.lb-score{font-weight:800;font-size:.95em;text-align:right;flex-shrink:0}
+.lb-score.top{color:var(--gold)}
+.you-badge{background:var(--accent);color:#fff;font-size:.6em;padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:middle}
+
+/* ── PROFILE ── */
+#s-profile{justify-content:flex-start;padding-top:0;gap:0}
+.profile-hero{width:100%;max-width:500px;background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(6,182,212,.15));padding:28px 20px 24px;text-align:center;flex-shrink:0}
+.profile-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:2.4em;margin:0 auto 12px;position:relative;cursor:pointer}
+.av-edit{position:absolute;bottom:0;right:0;width:22px;height:22px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65em}
+.profile-name{font-size:1.3em;font-weight:800}
+.profile-sub{font-size:.78em;color:var(--muted);margin-top:4px}
+.profile-xp{margin-top:14px;padding:0 16px}
+.profile-xp .xp-bar{height:8px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);width:100%;max-width:500px;flex-shrink:0}
+.stat-box{background:var(--surface);padding:16px 12px;text-align:center}
+.stat-val{font-size:1.4em;font-weight:800}
+.stat-lbl{font-size:.68em;color:var(--muted);margin-top:3px}
+.achievements{width:100%;max-width:500px;padding:16px 20px 90px;overflow-y:auto;flex:1}
+.achievements h3{font-size:.8em;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ach-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;opacity:.35}
+.ach-item.unlocked{opacity:1;border-color:var(--gold)}
+.ach-icon{font-size:1.8em}
+.ach-name{font-size:.65em;margin-top:4px;font-weight:600}
+
+/* ── MULTIPLAYER LOBBY ── */
+#s-lobby{justify-content:flex-start;padding-top:0;gap:0}
+.room-list{width:100%;max-width:500px;overflow-y:auto;flex:1;padding:8px 0 80px}
+.room-card{margin:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s}
+.room-card:active{transform:scale(.99);border-color:var(--accent)}
+.room-card .r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.room-card .r-name{font-weight:700;font-size:.9em}
+.room-badge{font-size:.7em;padding:3px 8px;border-radius:20px;font-weight:700}
+.room-badge.waiting{background:rgba(16,185,129,.2);color:var(--green)}
+.room-badge.full{background:rgba(239,68,68,.2);color:var(--red)}
+.room-badge.live{background:rgba(245,158,11,.2);color:var(--gold);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.room-players{display:flex;gap:6px;margin-top:8px}
+.player-dot{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.8em;border:2px solid var(--surface)}
+.player-dot.empty{background:var(--border);border-style:dashed}
+.create-room-btn{margin:8px 16px;background:linear-gradient(135deg,var(--accent),rgba(124,58,237,.7));border:none;border-radius:var(--radius);padding:16px;color:#fff;font-weight:800;font-size:.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.create-room-btn:active{opacity:.85}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:24px 20px max(24px,env(safe-area-inset-bottom));width:100%;max-width:500px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-title{font-size:1.1em;font-weight:800;margin-bottom:20px;text-align:center}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.95em;margin-bottom:12px;outline:none}
+.modal-input:focus{border-color:var(--accent)}
+.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px}
+.emoji-opt{width:44px;height:44px;border-radius:10px;background:var(--surface2);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:1.4em;cursor:pointer;transition:all .15s}
+.emoji-opt.selected{border-color:var(--accent);background:rgba(124,58,237,.2)}
+.modal-btn{width:100%;padding:14px;border-radius:10px;border:none;font-size:.95em;font-weight:700;cursor:pointer;transition:opacity .2s}
+.modal-btn:active{opacity:.85}
+.modal-btn.primary{background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff}
+.modal-btn.secondary{background:var(--surface2);color:var(--text);margin-top:8px}
+
+/* ── GAME MODE MODAL ── */
+.mode-option{display:flex;align-items:center;gap:14px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;cursor:pointer;transition:all .2s}
+.mode-option:active{border-color:var(--accent)}
+.mode-option .m-icon{font-size:2em;flex-shrink:0}
+.mode-option .m-info h3{font-size:.9em;font-weight:700}
+.mode-option .m-info p{font-size:.73em;color:var(--muted);margin-top:2px}
+.mode-option .m-arrow{margin-left:auto;color:var(--muted);font-size:.8em}
+
+/* ── DIFFICULTY BADGES ── */
+.diff-row{display:flex;gap:8px;margin-bottom:16px}
+.diff-btn{flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:var(--surface2);color:var(--text);font-size:.78em;font-weight:700;cursor:pointer;text-align:center;transition:all .2s}
+.diff-btn.active.easy{border-color:var(--green);background:rgba(16,185,129,.15);color:var(--green)}
+.diff-btn.active.medium{border-color:var(--gold);background:rgba(245,158,11,.15);color:var(--gold)}
+.diff-btn.active.hard{border-color:var(--red);background:rgba(239,68,68,.15);color:var(--red)}
+
+/* ── DAILY CHALLENGE ── */
+.daily-card{width:100%;max-width:360px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));border:1px solid rgba(124,58,237,.4);border-radius:var(--radius);padding:18px 16px;margin-bottom:18px;cursor:pointer;transition:all .2s}
+.daily-card:active{transform:scale(.98)}
+.daily-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.daily-icon{font-size:1.8em}
+.daily-title{font-weight:800;font-size:.9em}
+.daily-sub{font-size:.72em;color:var(--muted);margin-top:2px}
+.daily-timer{font-size:.78em;color:var(--accent2);font-weight:700;text-align:right}
+.daily-reward{display:flex;align-items:center;gap:6px;font-size:.78em;margin-top:8px}
+.daily-reward .gem{color:var(--accent2)}
+.daily-reward .coin{color:var(--gold)}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:.85em;font-weight:600;z-index:500;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="screen" id="s-loading">
+  <div class="dino-bounce">🦕</div>
+  <div style="font-size:1.6em;font-weight:900;margin-top:16px;letter-spacing:-1px">DinoRace</div>
+  <div style="font-size:.8em;color:var(--muted);margin-top:6px">Competitive Edition</div>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="load-bar"></div></div>
+  <div class="loading-text" id="load-text">Loading game engine...</div>
+</div>
+
+<!-- HOME SCREEN -->
+<div class="screen hidden" id="s-home">
+  <div class="home-header">
+    <div class="logo">🦕 DinoRace</div>
+    <div class="tagline">Run. Compete. Dominate.</div>
+  </div>
+
+  <div class="home-player" onclick="openProfileEdit()">
+    <div class="av" id="home-av">🦕</div>
+    <div class="info">
+      <div class="name" id="home-name">Loading...</div>
+      <div class="lvl" id="home-level">Level 1 · 0 XP</div>
+    </div>
+    <div class="edit">✏️</div>
+  </div>
+
+  <div class="xp-bar-wrap">
+    <div class="xp-label">
+      <span id="xp-label-lvl">Level 1</span>
+      <span id="xp-label-val">0 / 500 XP</span>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="daily-card" onclick="startDailyChallenge()">
+    <div class="daily-head">
+      <div class="daily-icon">🏆</div>
+      <div>
+        <div class="daily-title">Daily Challenge</div>
+        <div class="daily-sub" id="daily-desc">Beat 1000m today!</div>
+      </div>
+      <div class="daily-timer" id="daily-timer">22:14:33</div>
+    </div>
+    <div class="daily-reward">
+      <span>Rewards:</span>
+      <span class="coin">🪙 500 XP</span>
+      <span class="gem">💎 +25 gems</span>
+      <span id="daily-done" style="display:none;margin-left:auto;color:var(--green)">✅ Done!</span>
+    </div>
+  </div>
+
+  <div class="btn-grid">
+    <div class="btn-card primary" onclick="showModeSelect('single')">
+      <span class="icon">🎮</span>
+      <span class="label">SINGLE PLAYER</span>
+      <span class="sub">Practice & improve</span>
+    </div>
+    <div class="btn-card secondary" onclick="showScreen('s-lobby')">
+      <span class="icon">⚡</span>
+      <span class="label">MULTIPLAYER</span>
+      <span class="sub">Race others live</span>
+    </div>
+    <div class="btn-card" onclick="showScreen('s-leaderboard')">
+      <span class="icon">📊</span>
+      <span class="label">LEADERBOARD</span>
+      <span class="sub">Global rankings</span>
+    </div>
+    <div class="btn-card" onclick="showScreen('s-profile')">
+      <span class="icon">🧬</span>
+      <span class="label">PROFILE</span>
+      <span class="sub">Stats & badges</span>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD SCREEN -->
+<div class="screen hidden" id="s-leaderboard">
+  <div class="page-header" style="max-width:500px;width:100%">
+    <div class="back-btn" onclick="showScreen('s-home')">←</div>
+    <h2>🏆 Leaderboard</h2>
+  </div>
+  <div class="tabs" style="width:100%;max-width:500px">
+    <div class="tab active" onclick="switchLbTab('global',this)">🌍 Global</div>
+    <div class="tab" onclick="switchLbTab('daily',this)">📅 Daily</div>
+    <div class="tab" onclick="switchLbTab('friends',this)">👥 Friends</div>
+  </div>
+  <div class="lb-list" id="lb-list"></div>
+</div>
+
+<!-- PROFILE SCREEN -->
+<div class="screen hidden" id="s-profile">
+  <div class="page-header" style="max-width:500px;width:100%">
+    <div class="back-btn" onclick="showScreen('s-home')">←</div>
+    <h2>🧬 Profile</h2>
+  </div>
+  <div class="profile-hero" style="width:100%;max-width:500px">
+    <div class="profile-av" onclick="openProfileEdit()" id="profile-av">🦕
+      <div class="av-edit">✏️</div>
+    </div>
+    <div class="profile-name" id="profile-name">Player</div>
+    <div class="profile-sub" id="profile-sub">Level 1 · Runner</div>
+    <div class="profile-xp xp-bar-wrap" style="margin-top:14px">
+      <div class="xp-label">
+        <span id="p-xp-lbl">0 XP</span><span id="p-xp-next">500 XP to next level</span>
+      </div>
+      <div class="xp-bar" style="height:8px"><div class="xp-fill" id="p-xp-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-val" id="stat-hs">0</div><div class="stat-lbl">Best Score</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-games">0</div><div class="stat-lbl">Games</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-wins">0</div><div class="stat-lbl">MP Wins</div></div>
+  </div>
+  <div class="achievements">
+    <h3>Achievements</h3>
+    <div class="ach-grid" id="ach-grid"></div>
+  </div>
+</div>
+
+<!-- MULTIPLAYER LOBBY -->
+<div class="screen hidden" id="s-lobby">
+  <div class="page-header" style="max-width:500px;width:100%">
+    <div class="back-btn" onclick="showScreen('s-home')">←</div>
+    <h2>⚡ Multiplayer</h2>
+    <div style="margin-left:auto;font-size:.75em;color:var(--muted)" id="online-count">● 0 online</div>
+  </div>
+  <div class="tabs" style="width:100%;max-width:500px">
+    <div class="tab active" onclick="switchLobbyTab('public',this)">🌍 Public</div>
+    <div class="tab" onclick="switchLobbyTab('private',this)">🔒 Private</div>
+  </div>
+  <button class="create-room-btn" onclick="createRoom()">＋ Create Room</button>
+  <div class="room-list" id="room-list"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <div class="nav-tab active" onclick="navTo('s-home',this)">
+    <span class="nav-icon">🏠</span>Home
+  </div>
+  <div class="nav-tab" onclick="navTo('s-lobby',this)">
+    <span class="nav-icon">⚡</span>Race
+  </div>
+  <div class="nav-tab" onclick="navTo('s-leaderboard',this)">
+    <span class="nav-icon">📊</span>Ranks
+  </div>
+  <div class="nav-tab" onclick="navTo('s-profile',this)">
+    <span class="nav-icon">🧬</span>Profile
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Profile Edit Modal -->
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal-sheet">
+    <div class="modal-title">Edit Profile</div>
+    <div class="emoji-grid" id="emoji-grid"></div>
+    <input class="modal-input" id="name-input" type="text" placeholder="Your name..." maxlength="16">
+    <button class="modal-btn primary" onclick="saveProfile()">Save</button>
+    <button class="modal-btn secondary" onclick="closeModal('modal-profile')">Cancel</button>
+  </div>
+</div>
+
+<!-- Mode Select Modal -->
+<div class="modal-overlay" id="modal-mode">
+  <div class="modal-sheet">
+    <div class="modal-title">Single Player</div>
+    <div class="mode-option" onclick="startGame('normal','easy')">
+      <span class="m-icon">🌱</span>
+      <div class="m-info"><h3>Easy Mode</h3><p>Slower obstacles · Great for practice</p></div>
+      <span class="m-arrow">→</span>
+    </div>
+    <div class="mode-option" onclick="startGame('normal','medium')">
+      <span class="m-icon">🔥</span>
+      <div class="m-info"><h3>Normal Mode</h3><p>Classic dino speed</p></div>
+      <span class="m-arrow">→</span>
+    </div>
+    <div class="mode-option" onclick="startGame('normal','hard')">
+      <span class="m-icon">💀</span>
+      <div class="m-info"><h3>Hard Mode</h3><p>Max speed from start · 2× XP</p></div>
+      <span class="m-arrow">→</span>
+    </div>
+    <div class="mode-option" onclick="startGame('ghost')">
+      <span class="m-icon">👻</span>
+      <div class="m-info"><h3>Ghost Race</h3><p>Beat your own best run</p></div>
+      <span class="m-arrow">→</span>
+    </div>
+    <button class="modal-btn secondary" onclick="closeModal('modal-mode')">Cancel</button>
+  </div>
+</div>
+
+<!-- Create Room Modal -->
+<div class="modal-overlay" id="modal-create-room">
+  <div class="modal-sheet">
+    <div class="modal-title">Create Room</div>
+    <input class="modal-input" id="room-name-input" placeholder="Room name..." maxlength="20">
+    <div style="font-size:.78em;color:var(--muted);margin-bottom:8px">Difficulty</div>
+    <div class="diff-row">
+      <div class="diff-btn easy active" onclick="selectDiff('easy',this)">🌱 Easy</div>
+      <div class="diff-btn medium" onclick="selectDiff('medium',this)">🔥 Normal</div>
+      <div class="diff-btn hard" onclick="selectDiff('hard',this)">💀 Hard</div>
+    </div>
+    <div style="font-size:.78em;color:var(--muted);margin-bottom:8px">Max Players</div>
+    <div class="diff-row">
+      <div class="diff-btn active" id="mp-2" onclick="selectMaxP(2,this)">2P</div>
+      <div class="diff-btn" id="mp-4" onclick="selectMaxP(4,this)">4P</div>
+      <div class="diff-btn" id="mp-6" onclick="selectMaxP(6,this)">6P</div>
+    </div>
+    <button class="modal-btn primary" onclick="confirmCreateRoom()">Create & Join</button>
+    <button class="modal-btn secondary" onclick="closeModal('modal-create-room')">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════════════════════
+const EMOJIS = ['🦕','🦖','🐉','🦊','🐺','🐼','🐸','🦁','🐯','🐻','🦝','🦄','🦅','🦋','🐙','🦑','🦈','🐠','🦀','🌟'];
+const RANKS = ['Runner','Sprinter','Racer','Champion','Legend','Dino God'];
+const LEVEL_XP = [0,500,1200,2500,5000,10000,20000];
+
+function getProfile(){
+  try{ return JSON.parse(localStorage.getItem('dino_profile'))||null }catch(e){return null}
+}
+function setProfile(p){ localStorage.setItem('dino_profile',JSON.stringify(p)) }
+
+function defaultProfile(){
+  return {
+    name: 'Player'+Math.floor(Math.random()*9000+1000),
+    emoji: '🦕',
+    level: 1, xp: 0,
+    highScore: 0, totalGames: 0, mpWins: 0,
+    gems: 0,
+    dailyDate: '', dailyDone: false,
+    achievements: [],
+    id: 'p_'+Math.random().toString(36).slice(2)
+  };
+}
+
+let profile = getProfile() || defaultProfile();
+if(!profile.id) profile.id = 'p_'+Math.random().toString(36).slice(2);
+setProfile(profile);
+
+// ════════════════════════════════════════════════════════
+// LEVEL SYSTEM
+// ════════════════════════════════════════════════════════
+function getLevelInfo(){
+  let lvl=1;
+  for(let i=1;i<LEVEL_XP.length;i++){
+    if(profile.xp >= LEVEL_XP[i]) lvl=i+1; else break;
+  }
+  const curThresh = LEVEL_XP[Math.min(lvl-1,LEVEL_XP.length-1)];
+  const nextThresh = LEVEL_XP[Math.min(lvl,LEVEL_XP.length-1)];
+  const pct = lvl >= LEVEL_XP.length ? 100 : Math.round((profile.xp-curThresh)/(nextThresh-curThresh)*100);
+  return { lvl, pct, curThresh, nextThresh };
+}
+
+function addXP(amount){
+  const before = getLevelInfo().lvl;
+  profile.xp += amount;
+  const after = getLevelInfo().lvl;
+  if(after > before){
+    profile.level = after;
+    showToast('🎉 Level Up! You're now Level '+after,'success');
+  }
+  setProfile(profile);
+  updateUI();
+}
+
+// ════════════════════════════════════════════════════════
+// ACHIEVEMENTS
+// ════════════════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  {id:'first_run',icon:'🏃',name:'First Run',check:p=>p.totalGames>=1},
+  {id:'score_100',icon:'💯',name:'Centurion',check:p=>p.highScore>=100},
+  {id:'score_500',icon:'🚀',name:'Rocketeer',check:p=>p.highScore>=500},
+  {id:'score_1000',icon:'🌟',name:'Star Runner',check:p=>p.highScore>=1000},
+  {id:'score_2000',icon:'💎',name:'Diamond',check:p=>p.highScore>=2000},
+  {id:'games_10',icon:'🎮',name:'Dedicated',check:p=>p.totalGames>=10},
+  {id:'games_50',icon:'🔥',name:'On Fire',check:p=>p.totalGames>=50},
+  {id:'mp_win',icon:'🏆',name:'First Win',check:p=>p.mpWins>=1},
+  {id:'mp_wins_5',icon:'👑',name:'Champion',check:p=>p.mpWins>=5},
+  {id:'daily',icon:'📅',name:'Daily Grind',check:p=>p.dailyDone},
+];
+
+function checkAchievements(){
+  let newOnes=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(!profile.achievements.includes(a.id) && a.check(profile)){
+      profile.achievements.push(a.id);
+      newOnes.push(a);
+    }
+  });
+  if(newOnes.length){
+    setProfile(profile);
+    newOnes.forEach(a=>showToast('🏅 Achievement: '+a.name,'success'));
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// LEADERBOARD (localStorage-based, seeded with fake rivals)
+// ════════════════════════════════════════════════════════
+const FAKE_PLAYERS = [
+  {name:'SpeedKing99',emoji:'🦁',score:3847,games:234,wins:89},
+  {name:'DinoDestroyer',emoji:'💀',score:3201,games:178,wins:67},
+  {name:'NightRunner',emoji:'🌙',score:2954,games:156,wins:54},
+  {name:'FlashFeet',emoji:'⚡',score:2744,games:143,wins:48},
+  {name:'ObsidianDino',emoji:'🦖',score:2511,games:127,wins:39},
+  {name:'CrystalRunner',emoji:'💎',score:2280,games:112,wins:31},
+  {name:'SwiftPaws',emoji:'🦊',score:1988,games:98,wins:24},
+  {name:'MegaSprint',emoji:'🚀',score:1756,games:87,wins:18},
+  {name:'TurboLizard',emoji:'🦎',score:1502,games:74,wins:12},
+  {name:'CactusDodger',emoji:'🌵',score:1243,games:61,wins:7},
+];
+
+function buildLeaderboard(tab='global'){
+  const list = document.getElementById('lb-list');
+  list.innerHTML='';
+  let entries = FAKE_PLAYERS.map(p=>({...p,isMe:false}));
+  // Insert real player
+  entries.push({name:profile.name,emoji:profile.emoji,score:profile.highScore,games:profile.totalGames,wins:profile.mpWins,isMe:true});
+  if(tab==='daily'){
+    entries = entries.map(e=>({...e,score:Math.floor(e.score*(.3+Math.random()*.7))}));
+  } else if(tab==='friends'){
+    entries = entries.slice(0,5).concat({name:profile.name,emoji:profile.emoji,score:profile.highScore,isMe:true});
+  }
+  entries.sort((a,b)=>b.score-a.score);
+  entries.slice(0,20).forEach((p,i)=>{
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const div=document.createElement('div');
+    div.className='lb-row';
+    if(p.isMe) div.style.background='rgba(124,58,237,.08)';
+    div.innerHTML=`
+      <div class="lb-rank ${rankClass}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+      <div class="lb-av">${p.emoji}</div>
+      <div class="lb-info">
+        <div class="lb-name">${p.name}${p.isMe?'<span class="you-badge">YOU</span>':''}</div>
+        <div class="lb-detail">${p.games||0} games</div>
+      </div>
+      <div class="lb-score ${i<3?'top':''}">${p.score.toLocaleString()}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+let lbTab='global';
+function switchLbTab(tab, el){
+  lbTab=tab;
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildLeaderboard(tab);
+}
+
+// ════════════════════════════════════════════════════════
+// MULTIPLAYER ROOMS (localStorage simulation + cross-tab BroadcastChannel)
+// ════════════════════════════════════════════════════════
+let roomDiff='easy', roomMaxP=2;
+let bc;
+try{ bc=new BroadcastChannel('dino_rooms'); }catch(e){}
+
+function getRooms(){
+  try{
+    const r=JSON.parse(localStorage.getItem('dino_rooms')||'[]');
+    // Clean stale rooms (>5min old)
+    const fresh=r.filter(room=>Date.now()-room.created<300000);
+    if(fresh.length!==r.length) localStorage.setItem('dino_rooms',JSON.stringify(fresh));
+    return fresh;
+  }catch(e){return []}
+}
+
+function saveRooms(rooms){ localStorage.setItem('dino_rooms',JSON.stringify(rooms)); if(bc)bc.postMessage('update'); }
+
+function buildRoomList(tab='public'){
+  const list=document.getElementById('room-list');
+  list.innerHTML='';
+  let rooms=getRooms();
+  if(tab==='private') rooms=rooms.filter(r=>r.private);
+  else rooms=rooms.filter(r=>!r.private);
+
+  if(!rooms.length){
+    list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:.85em">No rooms yet.<br>Create one to start racing!</div>';
+    return;
+  }
+  rooms.forEach(room=>{
+    const isFull=room.players.length>=room.maxP;
+    const isLive=room.status==='playing';
+    const div=document.createElement('div');
+    div.className='room-card';
+    div.onclick=()=>joinRoom(room.id);
+    div.innerHTML=`
+      <div class="r-head">
+        <div class="r-name">🏁 ${room.name}</div>
+        <div class="room-badge ${isLive?'live':isFull?'full':'waiting'}">${isLive?'▶ LIVE':isFull?'FULL':'Waiting...'}</div>
+      </div>
+      <div style="font-size:.72em;color:var(--muted);margin-bottom:8px">${{easy:'🌱 Easy',medium:'🔥 Normal',hard:'💀 Hard'}[room.diff]} · ${room.players.length}/${room.maxP} players</div>
+      <div class="room-players">
+        ${room.players.map(p=>`<div class="player-dot" title="${p.name}">${p.emoji}</div>`).join('')}
+        ${Array(room.maxP-room.players.length).fill('<div class="player-dot empty">·</div>').join('')}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+let lobbyTab='public';
+function switchLobbyTab(tab,el){
+  lobbyTab=tab;
+  document.querySelectorAll('#s-lobby .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildRoomList(tab);
+}
+
+function createRoom(){ openModal('modal-create-room'); }
+
+function selectDiff(d,el){
+  roomDiff=d;
+  document.querySelectorAll('.diff-row .diff-btn.easy,.diff-row .diff-btn.medium,.diff-row .diff-btn.hard').forEach(b=>{b.classList.remove('active');});
+  el.classList.add('active');
+}
+function selectMaxP(n,el){
+  roomMaxP=n;
+  document.querySelectorAll('#mp-2,#mp-4,#mp-6').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function confirmCreateRoom(){
+  const name=(document.getElementById('room-name-input').value.trim()||profile.name+"'s Room").slice(0,20);
+  const rooms=getRooms();
+  const room={
+    id:'r_'+Date.now(),
+    name, diff:roomDiff, maxP:roomMaxP,
+    players:[{id:profile.id,name:profile.name,emoji:profile.emoji}],
+    status:'waiting', created:Date.now(), private:lobbyTab==='private'
+  };
+  rooms.push(room);
+  saveRooms(rooms);
+  closeModal('modal-create-room');
+  // Go to game with multiplayer params
+  startGame('multiplayer',roomDiff,room.id);
+}
+
+function joinRoom(roomId){
+  const rooms=getRooms();
+  const room=rooms.find(r=>r.id===roomId);
+  if(!room){showToast('Room not found','error');return;}
+  if(room.status==='playing'){showToast('Race already in progress!','error');return;}
+  if(room.players.length>=room.maxP){showToast('Room is full!','error');return;}
+  if(!room.players.find(p=>p.id===profile.id)){
+    room.players.push({id:profile.id,name:profile.name,emoji:profile.emoji});
+    saveRooms(rooms);
+  }
+  startGame('multiplayer',room.diff,roomId);
+}
+
+if(bc) bc.onmessage=()=>{ if(document.getElementById('s-lobby') && !document.getElementById('s-lobby').classList.contains('hidden')) buildRoomList(lobbyTab); };
+setInterval(()=>{ if(!document.getElementById('s-lobby').classList.contains('hidden')) buildRoomList(lobbyTab); },3000);
+
+// ════════════════════════════════════════════════════════
+// DAILY CHALLENGE
+// ════════════════════════════════════════════════════════
+function getDailyTarget(){
+  const seed=new Date().toDateString();
+  let h=0; for(let c of seed) h=(h*31+c.charCodeAt(0))&0xffff;
+  return 500+Math.round((h%10)*100);  // 500-1400
+}
+
+function updateDailyUI(){
+  const today=new Date().toDateString();
+  const target=getDailyTarget();
+  document.getElementById('daily-desc').textContent='Run '+target+'m today!';
+  document.getElementById('daily-done').style.display=profile.dailyDone&&profile.dailyDate===today?'block':'none';
+  // Timer
+  const now=new Date();
+  const midnight=new Date(); midnight.setHours(24,0,0,0);
+  const secs=Math.floor((midnight-now)/1000);
+  const h=String(Math.floor(secs/3600)).padStart(2,'0');
+  const m=String(Math.floor(secs%3600/60)).padStart(2,'0');
+  const s=String(secs%60).padStart(2,'0');
+  document.getElementById('daily-timer').textContent=h+':'+m+':'+s;
+}
+setInterval(updateDailyUI,1000);
+updateDailyUI();
+
+function startDailyChallenge(){
+  const today=new Date().toDateString();
+  if(profile.dailyDone&&profile.dailyDate===today){
+    showToast('Already completed today!','success'); return;
+  }
+  const target=getDailyTarget();
+  startGame('daily','normal',null,target);
+}
+
+// ════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════
+let currentScreen='s-loading';
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  currentScreen=id;
+  if(id==='s-leaderboard') buildLeaderboard(lbTab);
+  if(id==='s-lobby') buildRoomList(lobbyTab);
+  if(id==='s-profile') buildProfileScreen();
+}
+
+function navTo(screenId, el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  showScreen(screenId);
+}
+
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// ════════════════════════════════════════════════════════
+// PROFILE EDIT
+// ════════════════════════════════════════════════════════
+let selectedEmoji=profile.emoji;
+function openProfileEdit(){
+  selectedEmoji=profile.emoji;
+  document.getElementById('name-input').value=profile.name;
+  const grid=document.getElementById('emoji-grid');
+  grid.innerHTML=EMOJIS.map(e=>`<div class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}',this)">${e}</div>`).join('');
+  openModal('modal-profile');
+}
+function selectEmoji(e,el){
+  selectedEmoji=e;
+  document.querySelectorAll('.emoji-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function saveProfile(){
+  const name=document.getElementById('name-input').value.trim().slice(0,16)||profile.name;
+  profile.name=name; profile.emoji=selectedEmoji;
+  setProfile(profile);
+  closeModal('modal-profile');
+  updateUI();
+  showToast('Profile saved!','success');
+}
+
+// ════════════════════════════════════════════════════════
+// UI UPDATES
+// ════════════════════════════════════════════════════════
+function updateUI(){
+  const li=getLevelInfo();
+  document.getElementById('home-av').textContent=profile.emoji;
+  document.getElementById('home-name').textContent=profile.name;
+  document.getElementById('home-level').textContent='Level '+li.lvl+' · '+profile.xp.toLocaleString()+' XP';
+  document.getElementById('xp-label-lvl').textContent='Level '+li.lvl;
+  document.getElementById('xp-label-val').textContent=profile.xp.toLocaleString()+' / '+(LEVEL_XP[Math.min(li.lvl,LEVEL_XP.length-1)]||'MAX')+' XP';
+  document.getElementById('xp-fill').style.width=li.pct+'%';
+}
+
+function buildProfileScreen(){
+  const li=getLevelInfo();
+  document.getElementById('profile-av').childNodes[0].textContent=profile.emoji;
+  document.getElementById('profile-name').textContent=profile.name;
+  const rank=RANKS[Math.min(li.lvl-1,RANKS.length-1)];
+  document.getElementById('profile-sub').textContent='Level '+li.lvl+' · '+rank;
+  document.getElementById('p-xp-lbl').textContent=profile.xp.toLocaleString()+' XP';
+  document.getElementById('p-xp-next').textContent=(LEVEL_XP[Math.min(li.lvl,LEVEL_XP.length-1)]-profile.xp).toLocaleString()+' to next level';
+  document.getElementById('p-xp-fill').style.width=li.pct+'%';
+  document.getElementById('stat-hs').textContent=profile.highScore.toLocaleString();
+  document.getElementById('stat-games').textContent=profile.totalGames;
+  document.getElementById('stat-wins').textContent=profile.mpWins;
+
+  const grid=document.getElementById('ach-grid');
+  grid.innerHTML=ACHIEVEMENTS.map(a=>`
+    <div class="ach-item ${profile.achievements.includes(a.id)?'unlocked':''}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+(type||'');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ════════════════════════════════════════════════════════
+// GAME LAUNCH
+// ════════════════════════════════════════════════════════
+function showModeSelect(){ openModal('modal-mode'); }
+
+function startGame(mode, diff='medium', roomId=null, dailyTarget=null){
+  closeModal('modal-mode');
+  closeModal('modal-create-room');
+  const params=new URLSearchParams({mode,diff:diff||'medium'});
+  if(roomId) params.set('room',roomId);
+  if(dailyTarget) params.set('target',dailyTarget);
+  params.set('pid',profile.id);
+  params.set('name',profile.name);
+  params.set('emoji',profile.emoji);
+  window.location.href='game.html?'+params.toString();
+}
+
+// ════════════════════════════════════════════════════════
+// RESULTS HANDLING (from game page via sessionStorage)
+// ════════════════════════════════════════════════════════
+function processResults(){
+  const raw=sessionStorage.getItem('dino_result');
+  if(!raw) return;
+  sessionStorage.removeItem('dino_result');
+  const res=JSON.parse(raw);
+  const {score,mode,diff,won,dailyTarget}=res;
+
+  // Update stats
+  profile.totalGames++;
+  if(score>profile.highScore){
+    profile.highScore=score;
+    showToast('🏆 New high score: '+score+'!','success');
+  }
+  if(won) profile.mpWins++;
+
+  // XP calculation
+  let xpGain=Math.floor(score*0.5);
+  if(diff==='hard') xpGain=Math.floor(xpGain*2);
+  if(mode==='multiplayer') xpGain=Math.floor(xpGain*1.5);
+  if(won) xpGain=Math.floor(xpGain*2);
+
+  // Daily challenge
+  if(mode==='daily'&&dailyTarget&&score>=dailyTarget){
+    const today=new Date().toDateString();
+    if(!profile.dailyDone||profile.dailyDate!==today){
+      profile.dailyDone=true; profile.dailyDate=today;
+      profile.gems=(profile.gems||0)+25;
+      xpGain+=500;
+      setTimeout(()=>showToast('📅 Daily Challenge Complete! +500 XP +25 💎','success'),800);
+    }
+  }
+
+  setProfile(profile);
+  addXP(xpGain);
+  setTimeout(()=>{ if(xpGain>0) showToast('+'+xpGain+' XP','success'); },400);
+  checkAchievements();
+}
+
+// ════════════════════════════════════════════════════════
+// ONLINE COUNT SIMULATION
+// ════════════════════════════════════════════════════════
+function updateOnlineCount(){
+  const base=12+Math.floor(Math.random()*8);
+  document.getElementById('online-count').textContent='● '+base+' online';
+}
+setInterval(updateOnlineCount,5000);
+updateOnlineCount();
+
+// ════════════════════════════════════════════════════════
+// LOADING SEQUENCE
+// ════════════════════════════════════════════════════════
+const loadSteps=[
+  [20,'Loading assets...'],
+  [45,'Initializing engine...'],
+  [70,'Syncing leaderboard...'],
+  [90,'Building race track...'],
+  [100,'Ready!']
+];
+let step=0;
+function loadStep(){
+  if(step>=loadSteps.length){
+    setTimeout(()=>{
+      processResults();
+      updateUI();
+      showScreen('s-home');
+    },200);
+    return;
+  }
+  const [pct,msg]=loadSteps[step++];
+  document.getElementById('load-bar').style.width=pct+'%';
+  document.getElementById('load-text').textContent=msg;
+  setTimeout(loadStep,280+Math.random()*180);
+}
+setTimeout(loadStep,300);
+</script>
+</body>
+</html>
