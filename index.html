@@ -446,7 +446,7 @@ function addXP(amount){
   const after = getLevelInfo().lvl;
   if(after > before){
     profile.level = after;
-    showToast('🎉 Level Up! You're now Level '+after,'success');
+    showToast('🎉 Level Up! You\'re now Level '+after,'success');
   }
   setProfile(profile);
   updateUI();
