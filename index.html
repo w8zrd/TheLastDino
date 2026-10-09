@@ -151,6 +151,32 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .modal-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.16)}
 .modal-btn.primary{background:var(--text);color:var(--bg)}
 .modal-btn.secondary{margin-top:10px}
+/* Wallet bar + shop */
+.wallet-bar{display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:3px solid var(--text);box-shadow:var(--shadow);
+  padding:10px 14px;margin-bottom:14px;cursor:pointer}
+.wallet-gems{display:flex;align-items:center;gap:8px;font-family:var(--px);font-size:.85em}
+.wallet-gems .px{width:22px;height:22px}
+.wallet-shop{font-family:var(--px);font-size:.7em;background:var(--text);color:var(--bg);
+  padding:8px 14px;display:flex;align-items:center;gap:6px}
+.wallet-shop .px{width:14px;height:14px}
+.gem-ic{color:#22d3ee}
+.shop-bal{display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--px);font-size:1em;margin-bottom:18px}
+.shop-bal .px{width:26px;height:26px}
+.shop-bal span{font-family:inherit;font-size:.7em;color:var(--muted)}
+.shop-item{display:flex;align-items:center;gap:12px;background:var(--surface);
+  border:3px solid var(--text);padding:12px;margin-bottom:12px}
+.shop-ic .px{width:34px;height:34px;display:block}
+.shop-info{flex:1;display:flex;flex-direction:column;gap:2px}
+.shop-info b{font-family:var(--px);font-size:.68em}
+.shop-info span{font-size:.78em;color:var(--muted)}
+.shop-info .owned{color:var(--text);font-weight:700}
+.shop-buy{display:flex;align-items:center;gap:6px;background:var(--text);color:var(--bg);
+  border:none;font-family:var(--px);font-size:.75em;padding:10px 12px;cursor:pointer;white-space:nowrap}
+.shop-buy .px{width:16px;height:16px}
+.shop-buy:disabled{opacity:.4;cursor:default}
+.shop-note{font-size:.75em;color:var(--muted);text-align:center;margin:6px 0 4px}
 
 /* ── game mode modal ── */
 .mode-option{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border:3px solid var(--text);margin-bottom:10px;cursor:pointer}
@@ -188,7 +214,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <defs>
 <symbol id="px-dino" viewBox="0 0 16 16"><g fill="currentColor"><rect x="10" y="1" width="6" height="1"/><rect x="9" y="2" width="7" height="1"/><rect x="9" y="3" width="7" height="1"/><rect x="10" y="4" width="6" height="1"/><rect x="11" y="5" width="5" height="1"/><rect x="6" y="6" width="9" height="1"/><rect x="4" y="7" width="11" height="1"/><rect x="2" y="8" width="13" height="1"/><rect x="1" y="9" width="14" height="1"/><rect x="4" y="10" width="9" height="1"/><rect x="4" y="11" width="4" height="1"/><rect x="9" y="11" width="4" height="1"/><rect x="4" y="12" width="3" height="1"/><rect x="10" y="12" width="3" height="1"/><rect x="3" y="13" width="4" height="1"/><rect x="10" y="13" width="4" height="1"/><rect x="3" y="14" width="4" height="1"/><rect x="10" y="14" width="4" height="1"/></g></symbol>
 <symbol id="px-gamepad" viewBox="0 0 16 16"><g fill="currentColor"><rect x="3" y="2" width="2" height="1"/><rect x="3" y="3" width="4" height="1"/><rect x="3" y="4" width="6" height="1"/><rect x="3" y="5" width="8" height="1"/><rect x="3" y="6" width="10" height="1"/><rect x="3" y="7" width="12" height="1"/><rect x="3" y="8" width="10" height="1"/><rect x="3" y="9" width="8" height="1"/><rect x="3" y="10" width="6" height="1"/><rect x="3" y="11" width="4" height="1"/><rect x="3" y="12" width="2" height="1"/></g></symbol>
-<symbol id="px-bolt" viewBox="0 0 16 16"><g fill="currentColor"><rect x="9" y="0" width="3" height="1"/><rect x="8" y="1" width="3" height="1"/><rect x="7" y="2" width="3" height="1"/><rect x="6" y="3" width="3" height="1"/><rect x="5" y="4" width="4" height="1"/><rect x="4" y="5" width="5" height="1"/><rect x="3" y="6" width="6" height="1"/><rect x="2" y="7" width="10" height="1"/><rect x="6" y="8" width="6" height="1"/><rect x="5" y="9" width="5" height="1"/><rect x="5" y="10" width="4" height="1"/><rect x="4" y="11" width="3" height="1"/><rect x="4" y="12" width="2" height="1"/><rect x="3" y="13" width="2" height="1"/><rect x="3" y="14" width="1" height="1"/></g></symbol>
+<symbol id="px-bolt" viewBox="0 0 16 16"><g fill="currentColor"><rect x="9" y="0" width="3" height="1"/><rect x="8" y="1" width="3" height="1"/><rect x="7" y="2" width="3" height="1"/><rect x="6" y="3" width="3" height="1"/><rect x="5" y="4" width="4" height="1"/><rect x="4" y="5" width="5" height="1"/><rect x="3" y="6" width="6" height="1"/><rect x="2" y="7" width="10" height="1"/><rect x="6" y="8" width="6" height="1"/><rect x="5" y="9" width="5" height="1"/><rect x="5" y="10" width="4" height="1"/><rect x="4" y="11" width="3" height="1"/><rect x="4" y="12" width="2" height="1"/><rect x="3" y="13" width="2" height="1"/><rect x="3" y="14" width="1" height="1"/></g></symbol><symbol id="px-gem" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="1" width="4" height="1"/><rect x="3" y="2" width="6" height="1"/><rect x="2" y="3" width="8" height="1"/><rect x="1" y="4" width="10" height="1"/><rect x="0" y="5" width="12" height="1"/><rect x="0" y="6" width="12" height="1"/><rect x="1" y="7" width="10" height="1"/><rect x="2" y="8" width="8" height="1"/><rect x="3" y="9" width="6" height="1"/><rect x="4" y="10" width="4" height="1"/></g></symbol>
 <symbol id="px-chart" viewBox="0 0 12 12"><g fill="currentColor"><rect x="0" y="11" width="12" height="1"/><rect x="1" y="6" width="3" height="5"/><rect x="5" y="3" width="3" height="8"/><rect x="9" y="0" width="3" height="11"/></g></symbol>
 <symbol id="px-user" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="0" width="4" height="4"/><rect x="3" y="1" width="6" height="2"/><rect x="1" y="6" width="10" height="6"/><rect x="2" y="5" width="8" height="1"/></g></symbol>
 <symbol id="px-trophy" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="1" width="2" height="3"/><rect x="9" y="1" width="2" height="3"/><rect x="3" y="0" width="6" height="4"/><rect x="5" y="4" width="2" height="3"/><rect x="3" y="7" width="6" height="2"/><rect x="2" y="9" width="8" height="2"/></g></symbol>
@@ -227,6 +253,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="lvl" id="home-level">Level 1 · 0 XP</div>
     </div>
     <div class="edit"><svg class="px"><use href="#px-pencil"/></svg></div>
+  </div>
+
+  <div class="wallet-bar" onclick="openShop()">
+    <span class="wallet-gems"><svg class="px gem-ic"><use href="#px-gem"/></svg><b id="home-gems">0</b></span>
+    <span class="wallet-shop"><svg class="px"><use href="#px-gem"/></svg>SHOP</span>
   </div>
 
   <div class="xp-bar-wrap">
@@ -349,6 +380,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div>
 
+<!-- Shop Modal -->
+<div class="modal-overlay" id="modal-shop">
+  <div class="modal-sheet">
+    <div class="modal-title">SHOP</div>
+    <div class="shop-bal"><svg class="px gem-ic"><use href="#px-gem"/></svg><b id="shop-gems">0</b><span>gems</span></div>
+    <div class="shop-item">
+      <div class="shop-ic"><svg class="px" style="color:#f43f5e"><use href="#px-heart"/></svg></div>
+      <div class="shop-info"><b>Extra Heart</b><span>Start your next run with +1 heart</span><span class="owned" id="own-heart">Owned: 0</span></div>
+      <button class="shop-buy" id="buy-heart" onclick="buyBooster('heart')">10 <svg class="px gem-ic"><use href="#px-gem"/></svg></button>
+    </div>
+    <div class="shop-item">
+      <div class="shop-ic"><svg class="px" style="color:#38bdf8"><use href="#px-clock"/></svg></div>
+      <div class="shop-info"><b>Slow-Mo Start</b><span>Begin your next run in slow motion</span><span class="owned" id="own-slowmo">Owned: 0</span></div>
+      <button class="shop-buy" id="buy-slowmo" onclick="buyBooster('slowmo')">15 <svg class="px gem-ic"><use href="#px-gem"/></svg></button>
+    </div>
+    <div class="shop-note">Earn gems by playing — score 200+ in a run, or finish the Daily Challenge.</div>
+    <button class="modal-btn secondary" onclick="closeModal('modal-shop')">Close</button>
+  </div>
+</div>
+
 <!-- Mode Select Modal -->
 <div class="modal-overlay" id="modal-mode">
   <div class="modal-sheet">
@@ -428,7 +479,7 @@ function defaultProfile(){
     emoji: 'dino',
     level: 1, xp: 0,
     highScore: 0, totalGames: 0, mpWins: 0,
-    gems: 0,
+    gems: 0, inv: {heart: 0, slowmo: 0},
     dailyDate: '', dailyDone: false,
     achievements: [],
     id: 'p_'+Math.random().toString(36).slice(2)
@@ -711,6 +762,35 @@ function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ════════════════════════════════════════════════════════
+// SHOP — spend gems on boosters for the next run
+// ════════════════════════════════════════════════════════
+const SHOP_ITEMS={
+  heart:{price:10,name:'Extra Heart'},
+  slowmo:{price:15,name:'Slow-Mo Start'},
+};
+function openShop(){ renderShop(); openModal('modal-shop'); }
+function renderShop(){
+  const gems=profile.gems||0;
+  const inv=profile.inv||{heart:0,slowmo:0};
+  document.getElementById('shop-gems').textContent=gems.toLocaleString();
+  document.getElementById('own-heart').textContent='Owned: '+(inv.heart||0);
+  document.getElementById('own-slowmo').textContent='Owned: '+(inv.slowmo||0);
+  document.getElementById('buy-heart').disabled=gems<SHOP_ITEMS.heart.price;
+  document.getElementById('buy-slowmo').disabled=gems<SHOP_ITEMS.slowmo.price;
+}
+function buyBooster(kind){
+  const item=SHOP_ITEMS[kind];
+  if((profile.gems||0)<item.price) return;
+  profile.gems-=item.price;
+  profile.inv=profile.inv||{heart:0,slowmo:0};
+  profile.inv[kind]=(profile.inv[kind]||0)+1;
+  setProfile(profile);
+  document.getElementById('home-gems').textContent=profile.gems.toLocaleString();
+  renderShop();
+  showToast(item.name+' bought!','success');
+}
+
+// ════════════════════════════════════════════════════════
 // PROFILE EDIT
 // ════════════════════════════════════════════════════════
 let selectedAvatar=avatarIcon(profile.emoji);
@@ -743,6 +823,7 @@ function updateUI(){
   document.getElementById('home-av').innerHTML=pxIcon(avatarIcon(profile.emoji));
   document.getElementById('home-name').textContent=profile.name;
   document.getElementById('home-level').textContent='Level '+li.lvl+' · '+profile.xp.toLocaleString()+' XP';
+  document.getElementById('home-gems').textContent=(profile.gems||0).toLocaleString();
   document.getElementById('xp-label-lvl').textContent='Level '+li.lvl;
   document.getElementById('xp-label-val').textContent=profile.xp.toLocaleString()+' / '+(LEVEL_XP[Math.min(li.lvl,LEVEL_XP.length-1)]||'MAX')+' XP';
   document.getElementById('xp-fill').style.width=li.pct+'%';
