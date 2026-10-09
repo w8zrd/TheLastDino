@@ -52,26 +52,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .screen.hidden{display:none}
 
-/* ── home + attract-mode scenery (no dino, constant slow scroll) ── */
-#s-home{gap:0;overflow:hidden}
-.scenery{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-#s-home .home-header,#s-home .home-player,#s-home .xp-bar-wrap,#s-home .daily-card,#s-home .btn-grid{position:relative;z-index:1}
-.cloud{position:absolute;left:0;color:var(--border);animation:drift linear infinite}
-.cloud.c1{top:15%;animation-duration:42s}
-.cloud.c2{top:30%;animation-duration:64s;scale:.7;opacity:.8}
-.cloud.c3{top:8%;animation-duration:88s;scale:1.3;opacity:.6}
-@keyframes drift{from{transform:translateX(105vw)}to{transform:translateX(-140px)}}
-.ground{position:absolute;left:0;right:0;bottom:0;height:30px;background-repeat:repeat-x;animation:gscroll 1.8s linear infinite;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='30' viewBox='0 0 48 30' shape-rendering='crispEdges'%3E%3Cg fill='%23a1a1aa'%3E%3Crect x='0' y='24' width='48' height='3'/%3E%3Crect x='8' y='20' width='5' height='4'/%3E%3Crect x='30' y='21' width='7' height='3'/%3E%3Crect x='42' y='19' width='3' height='5'/%3E%3C/g%3E%3C/svg%3E")}
-@media(prefers-color-scheme:dark){
-  .ground{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='30' viewBox='0 0 48 30' shape-rendering='crispEdges'%3E%3Cg fill='%2334343c'%3E%3Crect x='0' y='24' width='48' height='3'/%3E%3Crect x='8' y='20' width='5' height='4'/%3E%3Crect x='30' y='21' width='7' height='3'/%3E%3Crect x='42' y='19' width='3' height='5'/%3E%3C/g%3E%3C/svg%3E")}
-}
-@keyframes gscroll{from{background-position-x:0}to{background-position-x:-48px}}
-
-.home-header{text-align:center;margin-bottom:26px}
-.logo{font-family:var(--px);font-size:1.35em;color:var(--text);letter-spacing:2px;display:flex;align-items:center;gap:14px;justify-content:center}
-.logo .px{width:46px;height:46px}
-.tagline{color:var(--muted);font-size:.72em;margin-top:12px;letter-spacing:.22em;text-transform:uppercase}
+/* ── home ── */
+#s-home{gap:0}
 .home-player{display:flex;align-items:center;gap:12px;background:var(--surface);border:3px solid var(--text);box-shadow:var(--shadow);padding:12px 14px;margin-bottom:20px;width:100%;max-width:360px;cursor:pointer}
 .home-player:active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(0,0,0,.16)}
 .home-player .av{width:44px;height:44px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
@@ -90,11 +72,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .btn-card .icon{font-size:30px;color:var(--text);line-height:1}
 .btn-card .label{font-family:var(--px);font-size:.6em;letter-spacing:.04em;line-height:1.5}
 .btn-card .sub{font-size:.68em;color:var(--muted)}
-
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:3px solid var(--text);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:50}
-.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;opacity:.45;font-size:.58em;font-weight:700;letter-spacing:.06em;font-family:var(--px)}
-.nav-tab .nav-icon{font-size:22px}
-.nav-tab.active{opacity:1}
 
 /* ── leaderboard ── */
 #s-leaderboard{justify-content:flex-start;padding-top:0;gap:0}
@@ -209,50 +186,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
-<symbol id="px-dino" viewBox="0 0 12 12"><g fill="currentColor"><rect x="0" y="6" width="2" height="2"/><rect x="2" y="5" width="6" height="4"/><rect x="8" y="2" width="4" height="4"/><rect x="3" y="9" width="2" height="3"/><rect x="6" y="9" width="2" height="3"/><rect x="2" y="11" width="4" height="1"/><rect x="5" y="11" width="4" height="1"/></g></symbol>
-<symbol id="px-gamepad" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="4" width="10" height="5"/><rect x="0" y="6" width="2" height="4"/><rect x="10" y="6" width="2" height="4"/></g></symbol>
-<symbol id="px-bolt" viewBox="0 0 12 12"><g fill="currentColor"><rect x="6" y="0" width="3" height="5"/><rect x="4" y="4" width="4" height="3"/><rect x="3" y="7" width="3" height="5"/></g></symbol>
-<symbol id="px-chart" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="7" width="2" height="4"/><rect x="5" y="4" width="2" height="7"/><rect x="9" y="1" width="2" height="10"/><rect x="0" y="11" width="12" height="1"/></g></symbol>
-<symbol id="px-user" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="1" width="4" height="4"/><rect x="2" y="7" width="8" height="5"/></g></symbol>
-<symbol id="px-trophy" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="1" width="2" height="3"/><rect x="9" y="1" width="2" height="3"/><rect x="3" y="0" width="6" height="4"/><rect x="5" y="4" width="2" height="3"/><rect x="3" y="7" width="6" height="1"/><rect x="2" y="8" width="8" height="2"/></g></symbol>
-<symbol id="px-calendar" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="2" width="10" height="9"/><rect x="3" y="0" width="2" height="3"/><rect x="7" y="0" width="2" height="3"/></g></symbol>
+<symbol id="px-dino" viewBox="0 0 12 12"><g fill="currentColor"><rect x="7" y="1" width="5" height="3"/><rect x="10" y="4" width="2" height="1"/><rect x="3" y="4" width="6" height="4"/><rect x="0" y="5" width="3" height="2"/><rect x="0" y="6" width="2" height="1"/><rect x="8" y="5" width="1" height="2"/><rect x="4" y="8" width="2" height="4"/><rect x="7" y="8" width="2" height="4"/><rect x="3" y="11" width="4" height="1"/><rect x="6" y="11" width="4" height="1"/></g></symbol>
+<symbol id="px-gamepad" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="2" width="4" height="2"/><rect x="2" y="4" width="8" height="5"/><rect x="0" y="6" width="3" height="5"/><rect x="9" y="6" width="3" height="5"/><rect x="3" y="5" width="2" height="2"/><rect x="7" y="5" width="2" height="2"/></g></symbol>
+<symbol id="px-bolt" viewBox="0 0 12 12"><g fill="currentColor"><rect x="7" y="0" width="3" height="4"/><rect x="5" y="3" width="5" height="3"/><rect x="3" y="6" width="5" height="3"/><rect x="4" y="9" width="3" height="3"/></g></symbol>
+<symbol id="px-chart" viewBox="0 0 12 12"><g fill="currentColor"><rect x="0" y="11" width="12" height="1"/><rect x="1" y="6" width="3" height="5"/><rect x="5" y="3" width="3" height="8"/><rect x="9" y="0" width="3" height="11"/></g></symbol>
+<symbol id="px-user" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="0" width="4" height="4"/><rect x="3" y="1" width="6" height="2"/><rect x="1" y="6" width="10" height="6"/><rect x="2" y="5" width="8" height="1"/></g></symbol>
+<symbol id="px-trophy" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="1" width="2" height="3"/><rect x="9" y="1" width="2" height="3"/><rect x="3" y="0" width="6" height="4"/><rect x="5" y="4" width="2" height="3"/><rect x="3" y="7" width="6" height="2"/><rect x="2" y="9" width="8" height="2"/></g></symbol>
+<symbol id="px-calendar" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="2" width="10" height="9"/><rect x="3" y="0" width="2" height="3"/><rect x="7" y="0" width="2" height="3"/><rect x="1" y="2" width="10" height="3"/></g></symbol>
 <symbol id="px-users" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="2" width="3" height="3"/><rect x="0" y="6" width="5" height="5"/><rect x="8" y="2" width="3" height="3"/><rect x="7" y="6" width="5" height="5"/></g></symbol>
 <symbol id="px-globe" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="1"/><rect x="1" y="3" width="1" height="6"/><rect x="10" y="3" width="1" height="6"/><rect x="3" y="10" width="6" height="1"/><rect x="5" y="1" width="2" height="10"/><rect x="1" y="5" width="10" height="2"/></g></symbol>
-<symbol id="px-lock" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="1" width="4" height="1"/><rect x="4" y="1" width="1" height="5"/><rect x="7" y="1" width="1" height="5"/><rect x="2" y="5" width="8" height="6"/></g></symbol>
+<symbol id="px-lock" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="1" width="4" height="1"/><rect x="4" y="1" width="1" height="5"/><rect x="7" y="1" width="1" height="5"/><rect x="2" y="5" width="8" height="6"/><rect x="5" y="7" width="2" height="3"/></g></symbol>
 <symbol id="px-play" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="2" width="2" height="8"/><rect x="5" y="3" width="2" height="6"/><rect x="7" y="4" width="2" height="4"/><rect x="9" y="5" width="2" height="2"/></g></symbol>
-<symbol id="px-star" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="1" width="2" height="2"/><rect x="4" y="3" width="4" height="3"/><rect x="1" y="4" width="10" height="2"/><rect x="4" y="6" width="4" height="2"/><rect x="3" y="8" width="2" height="3"/><rect x="7" y="8" width="2" height="3"/></g></symbol>
-<symbol id="px-medal" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="0" width="2" height="4"/><rect x="7" y="0" width="2" height="4"/><rect x="4" y="4" width="4" height="4"/><rect x="3" y="5" width="6" height="2"/></g></symbol>
+<symbol id="px-star" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="0" width="2" height="3"/><rect x="4" y="2" width="4" height="2"/><rect x="1" y="4" width="10" height="2"/><rect x="2" y="6" width="8" height="2"/><rect x="4" y="8" width="4" height="1"/><rect x="3" y="9" width="2" height="3"/><rect x="7" y="9" width="2" height="3"/></g></symbol>
+<symbol id="px-medal" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="0" width="2" height="4"/><rect x="7" y="0" width="2" height="4"/><rect x="4" y="4" width="4" height="4"/><rect x="3" y="5" width="6" height="2"/><rect x="5" y="3" width="2" height="6"/></g></symbol>
 <symbol id="px-check" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="6" width="2" height="2"/><rect x="3" y="8" width="2" height="2"/><rect x="5" y="6" width="2" height="4"/><rect x="7" y="4" width="2" height="2"/><rect x="9" y="2" width="2" height="2"/></g></symbol>
 <symbol id="px-plus" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="2" width="2" height="8"/><rect x="2" y="5" width="8" height="2"/></g></symbol>
 <symbol id="px-back" viewBox="0 0 12 12"><g fill="currentColor"><rect x="0" y="5" width="3" height="2"/><rect x="3" y="3" width="3" height="6"/><rect x="6" y="5" width="6" height="2"/></g></symbol>
-<symbol id="px-home" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="0" width="2" height="2"/><rect x="3" y="2" width="6" height="2"/><rect x="1" y="4" width="10" height="2"/><rect x="2" y="6" width="8" height="6"/></g></symbol>
+<symbol id="px-home" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="0" width="2" height="2"/><rect x="3" y="2" width="6" height="2"/><rect x="1" y="4" width="10" height="2"/><rect x="2" y="6" width="8" height="6"/><rect x="5" y="8" width="2" height="4"/></g></symbol>
 <symbol id="px-cactus" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="0" width="2" height="12"/><rect x="3" y="4" width="2" height="4"/><rect x="3" y="4" width="3" height="2"/><rect x="7" y="6" width="2" height="4"/><rect x="7" y="6" width="3" height="2"/></g></symbol>
-<symbol id="px-ghost" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="2"/><rect x="2" y="3" width="8" height="6"/><rect x="2" y="9" width="2" height="2"/><rect x="5" y="9" width="2" height="2"/><rect x="8" y="9" width="2" height="2"/></g></symbol>
+<symbol id="px-ghost" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="2"/><rect x="2" y="3" width="8" height="6"/><rect x="4" y="4" width="2" height="2"/><rect x="2" y="9" width="2" height="2"/><rect x="5" y="9" width="2" height="2"/><rect x="8" y="9" width="2" height="2"/></g></symbol>
 <symbol id="px-cloud" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="6" width="10" height="4"/><rect x="3" y="3" width="6" height="3"/><rect x="4" y="1" width="4" height="2"/></g></symbol>
 <symbol id="px-rocket" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="0" width="2" height="1"/><rect x="4" y="1" width="4" height="6"/><rect x="2" y="5" width="2" height="4"/><rect x="8" y="5" width="2" height="4"/><rect x="5" y="7" width="2" height="4"/></g></symbol>
-<symbol id="px-heart" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="2" width="3" height="2"/><rect x="7" y="2" width="3" height="2"/><rect x="2" y="4" width="8" height="3"/><rect x="3" y="7" width="6" height="2"/><rect x="5" y="9" width="2" height="2"/></g></symbol>
+<symbol id="px-heart" viewBox="0 0 12 12"><g fill="currentColor"><rect x="2" y="2" width="4" height="2"/><rect x="6" y="2" width="4" height="2"/><rect x="1" y="4" width="10" height="3"/><rect x="2" y="7" width="8" height="2"/><rect x="4" y="9" width="4" height="2"/><rect x="5" y="11" width="2" height="1"/></g></symbol>
 <symbol id="px-clock" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="1"/><rect x="2" y="2" width="1" height="8"/><rect x="9" y="2" width="1" height="8"/><rect x="3" y="10" width="6" height="1"/><rect x="5" y="3" width="2" height="4"/><rect x="5" y="5" width="4" height="2"/></g></symbol>
-<symbol id="px-pencil" viewBox="0 0 12 12"><g fill="currentColor"><rect x="2" y="8" width="2" height="2"/><rect x="4" y="6" width="2" height="2"/><rect x="6" y="4" width="2" height="2"/><rect x="8" y="2" width="2" height="2"/><rect x="9" y="0" width="2" height="2"/></g></symbol>
-<symbol id="px-seedling" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="5" width="2" height="6"/><rect x="2" y="3" width="4" height="2"/><rect x="6" y="3" width="4" height="2"/><rect x="5" y="1" width="2" height="2"/></g></symbol>
-<symbol id="px-fire" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="4" width="4" height="6"/><rect x="5" y="1" width="2" height="4"/><rect x="3" y="6" width="2" height="3"/><rect x="7" y="6" width="2" height="3"/><rect x="5" y="9" width="2" height="2"/></g></symbol>
-<symbol id="px-skull" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="2"/><rect x="2" y="3" width="8" height="4"/><rect x="3" y="7" width="6" height="2"/><rect x="4" y="9" width="1" height="2"/><rect x="7" y="9" width="1" height="2"/></g></symbol>
+<symbol id="px-pencil" viewBox="0 0 12 12"><g fill="currentColor"><rect x="1" y="9" width="3" height="2"/><rect x="3" y="7" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/><rect x="7" y="3" width="2" height="2"/><rect x="9" y="1" width="2" height="2"/><rect x="10" y="0" width="2" height="1"/></g></symbol>
+<symbol id="px-seedling" viewBox="0 0 12 12"><g fill="currentColor"><rect x="5" y="5" width="2" height="7"/><rect x="2" y="3" width="4" height="2"/><rect x="1" y="4" width="2" height="1"/><rect x="6" y="3" width="4" height="2"/><rect x="9" y="4" width="2" height="1"/><rect x="5" y="1" width="2" height="2"/></g></symbol>
+<symbol id="px-fire" viewBox="0 0 12 12"><g fill="currentColor"><rect x="4" y="4" width="4" height="6"/><rect x="5" y="1" width="2" height="4"/><rect x="3" y="6" width="2" height="3"/><rect x="7" y="6" width="2" height="3"/><rect x="5" y="9" width="2" height="3"/><rect x="2" y="8" width="2" height="2"/><rect x="8" y="8" width="2" height="2"/></g></symbol>
+<symbol id="px-skull" viewBox="0 0 12 12"><g fill="currentColor"><rect x="3" y="1" width="6" height="2"/><rect x="2" y="3" width="8" height="4"/><rect x="3" y="7" width="6" height="2"/><rect x="4" y="9" width="1" height="3"/><rect x="7" y="9" width="1" height="3"/><rect x="5" y="10" width="2" height="1"/></g></symbol>
 </defs>
 </svg>
 
 
+
 <!-- HOME SCREEN -->
 <div class="screen hidden" id="s-home">
-  <div class="scenery" aria-hidden="true">
-    <svg class="cloud c1" viewBox="0 0 12 12" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="6" width="10" height="4"/><rect x="3" y="3" width="6" height="3"/></g></svg>
-    <svg class="cloud c2" viewBox="0 0 12 12" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="6" width="10" height="4"/><rect x="3" y="3" width="6" height="3"/></g></svg>
-    <svg class="cloud c3" viewBox="0 0 12 12" shape-rendering="crispEdges"><g fill="currentColor"><rect x="1" y="6" width="10" height="4"/><rect x="3" y="3" width="6" height="3"/></g></svg>
-    <div class="ground"></div>
-  </div>
-  <div class="home-header">
-    <div class="logo"><svg class="px"><use href="#px-dino"/></svg><span>DinoRace</span></div>
-    <div class="tagline">Run · Compete · Dominate</div>
-  </div>
-
   <div class="home-player" onclick="openProfileEdit()">
     <div class="av" id="home-av"></div>
     <div class="info">
@@ -368,22 +335,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
   <button class="create-room-btn" onclick="createRoom()"><svg class="px"><use href="#px-plus"/></svg><span>Create Room</span></button>
   <div class="room-list" id="room-list"></div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav" id="bottom-nav">
-  <div class="nav-tab active" onclick="navTo('s-home',this)">
-    <span class="nav-icon"><svg class="px"><use href="#px-home"/></svg></span><span>Home</span>
-  </div>
-  <div class="nav-tab" onclick="navTo('s-lobby',this)">
-    <span class="nav-icon"><svg class="px"><use href="#px-bolt"/></svg></span><span>Race</span>
-  </div>
-  <div class="nav-tab" onclick="navTo('s-leaderboard',this)">
-    <span class="nav-icon"><svg class="px"><use href="#px-chart"/></svg></span><span>Ranks</span>
-  </div>
-  <div class="nav-tab" onclick="navTo('s-profile',this)">
-    <span class="nav-icon"><svg class="px"><use href="#px-user"/></svg></span><span>Profile</span>
-  </div>
 </div>
 
 <!-- MODALS -->
